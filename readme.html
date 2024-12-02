@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide des Scripts - Adobe Experience Cloud</title>
+    <link href="https://use.typekit.net/fxt3mnw.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: adobe-clean, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #e1251b;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+        main {
+            padding: 2rem;
+        }
+        section {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #e1251b;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        pre, code {
+            background: #f8f8f8;
+            color: #333;
+            padding: 0.8rem;
+            border-radius: 5px;
+            display: block;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        a {
+            color: #e1251b;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Guide des Scripts - Adobe Experience Cloud</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Introduction</h2>
+            <p>Ce guide contient une description des scripts disponibles dans ce projet, ainsi que les étapes nécessaires pour leur exécution.</p>
+        </section>
+        <section>
+            <h2>Structure du projet</h2>
+            <pre>
+.
+├── api-script.zip
+├── audit/
+│   ├── list_audit_events.sh
+│   └── list_audit_events_console.sh
+├── common/
+│   ├── common.sh
+│   └── obtain_access_token.sh
+├── environments/
+│   ├── list_environment_variables.sh
+│   ├── list_environments.sh
+│   └── list_environments_details.sh
+├── init/
+│   ├── Cloud_Manager_Public_API.postman_collection.json
+│   └── adobe-api-init.sh
+├── logs/
+│   ├── download_all_logs.sh
+│   ├── download_all_logs_for_all_programs.sh
+│   ├── download_all_logs_for_program.sh
+│   └── download_logs.sh
+├── metrics/
+│   └── fetch_environment_metrics.sh
+├── pipelines/
+│   ├── advance_execution_step.sh
+│   ├── cancel_execution_step.sh
+│   ├── get_current_execution.sh
+│   ├── get_executions.sh
+│   ├── get_pipeline.sh
+│   ├── get_pipelines.sh
+│   ├── get_specific_execution.sh
+│   ├── get_specific_execution_step.sh
+│   ├── get_specific_execution_step_logs.sh
+│   ├── get_specific_execution_step_metrics.sh
+│   └── start_pipeline.sh
+├── program/
+│   ├── get_program.sh
+│   ├── list_ip_allowlist_program.sh
+│   ├── list_network_infrastructures_program.sh
+│   ├── list_program_environments.sh
+│   ├── list_program_regions.sh
+│   └── list_programs.sh
+├── users/
+│   ├── export_user_info.sh
+│   ├── user_data.csv
+│   └── users_list.csv
+├── variables.properties
+└── variables.properties.bak
+            </pre>
+        </section>
+        <section>
+            <h2>Configuration</h2>
+            <h3>1. Rendre les scripts exécutables</h3>
+            <p>Pour exécuter les scripts, rends-les exécutables en exécutant cette commande depuis la racine du projet :</p>
+            <pre>
+chmod -R +x .
+            </pre>
+            <h3>2. Configurer <code>variables.properties</code></h3>
+            <p>Crée un compte de service via <a href="https://developer.adobe.com/" target="_blank">Adobe Developer Console</a>. Assure-toi que ton compte possède les droits suivants :</p>
+            <ul>
+                <li>Cloud Manager API</li>
+                <li>User Management API</li>
+                <li>Experience Platform API</li>
+            </ul>
+            <p>Configure le fichier <code>variables.properties</code> avec les informations suivantes :</p>
+            <pre>
+api_key=<insérer_clé_API>
+client_secret=<insérer_secret_client>
+organization_id=<insérer_identifiant_organisation>
+technical_account_id=<insérer_identifiant_compte_technique>
+metascopes=<insérer_scopes>
+            </pre>
+        </section>
+        <section>
+            <h2>Contact</h2>
+            <p>Pour toute question, contacte l'administrateur ou réfère-toi à la documentation officielle Adobe.</p>
+        </section>
+    </main>
+    <footer>
+        &copy; 2024 Projet Adobe Experience Cloud. Tous droits réservés.
+    </footer>
+</body>
+</html>

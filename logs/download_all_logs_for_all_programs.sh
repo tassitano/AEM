@@ -21,29 +21,41 @@ if [[ -z "$programs_json" ]]; then
   exit 1
 fi
 
-# Extraire les ID des programmes du JSON
-programs=$(echo "$programs_json" | jq -r '._embedded.programs[] | .id')
+# Extraire les ID et noms des programmes du JSON
+programs=$(echo "$programs_json" | jq -r '._embedded.programs[] | "\(.id) \(.name)"')
 if [[ -z "$programs" ]]; then
-  echo "Erreur : Aucun ID de programme trouvé dans la réponse JSON."
+  echo "Erreur : Aucun programme trouvé dans la réponse JSON."
   exit 1
 fi
 
 # Parcourir chaque programme
-for program_id in $programs; do
-  echo "Traitement du programme ID : $program_id"
+while IFS= read -r program; do
+  program_id=$(echo "$program" | awk '{print $1}')
+  program_name=$(echo "$program" | awk '{for (i=2; i<=NF; i++) printf "%s ", $i; print ""}')
+  echo "Traitement du programme : $program_name (ID : $program_id)"
 
   # Obtenir la liste des environnements associés au programme
-  environments=$(../environments/list_environments.sh "$program_id" | jq -r '._embedded.environments[] | .id')
+  environments_json=$(../environments/list_environments.sh "$program_id")
+  if [[ -z "$environments_json" ]]; then
+    echo "Erreur : Impossible de récupérer la liste des environnements pour le programme $program_name."
+    continue
+  fi
+
+  environments=$(echo "$environments_json" | jq -r '._embedded.environments[] | "\(.id) \(.name)"')
+
   if [[ -z "$environments" ]]; then
-    echo "Erreur : Impossible de récupérer la liste des environnements pour le programme $program_id."
+    echo "Aucun environnement trouvé pour le programme $program_name."
     continue
   fi
 
   # Parcourir chaque environnement
-  for environment_id in $environments; do
-    echo "Téléchargement des journaux pour l'environnement ID : $environment_id"
+  while IFS= read -r environment; do
+    environment_id=$(echo "$environment" | awk '{print $1}')
+    environment_name=$(echo "$environment" | awk '{for (i=2; i<=NF; i++) printf "%s ", $i; print ""}')
+    echo "Téléchargement des journaux pour l'environnement : $environment_name (ID : $environment_id)"
     ../logs/download_logs.sh "$program_id" "$environment_id"
-  done
-done
+  done <<< "$environments"
+
+done <<< "$programs"
 
 echo "Téléchargement des journaux terminé."

@@ -14,8 +14,8 @@
 # Charger les variables communes
 source ../common/common.sh
 
-# Obtenir la liste des programmes
-programs=$(../program/list_programs.sh)
+# Obtenir la liste des programmes et extraire uniquement les IDs
+programs=$(../program/list_programs.sh | jq -r '.[] | .id')
 if [[ -z "$programs" ]]; then
   echo "Erreur : Impossible de récupérer la liste des programmes."
   exit 1
@@ -23,10 +23,10 @@ fi
 
 # Parcourir chaque programme
 for program_id in $programs; do
-  echo "Traitement du programme ID : $program_id" 
+  echo "Traitement du programme ID : $program_id"
 
   # Obtenir la liste des environnements associés au programme
-  environments=$(../environments/list_environments.sh "$program_id")
+  environments=$(../environments/list_environments.sh "$program_id" | jq -r '.[] | .id')
   if [[ -z "$environments" ]]; then
     echo "Erreur : Impossible de récupérer les environnements pour le programme $program_id."
     continue

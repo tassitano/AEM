@@ -12,38 +12,36 @@
 # ----------------------------------------------------------------------
 
 # Charger les variables communes
-source ./common/common.sh
+source ../common/common.sh
 
-# Vérifie si les scripts externes nécessaires sont disponibles
-check_dependencies() {
-    if ! [ -x "$(command -v ./get_environments.sh)" ] || ! [ -x "$(command -v ./download_logs.sh)" ]; then
-        echo "Les scripts nécessaires (get_environments.sh ou download_logs.sh) ne sont pas accessibles." >&2
-        exit 1
+# Obtenir la liste des programmes
+programs=$(../program/list_programs.sh)
+if [[ -z "$programs" ]]; then
+  echo "Erreur : Impossible de récupérer la liste des programmes."
+  exit 1
+fi
+
+# Parcourir chaque programme
+for program_id in $programs; do
+  echo "Traitement du programme ID : $program_id" 
+
+  # Obtenir la liste des environnements associés au programme
+  environments=$(../environments/list_environments.sh "$program_id")
+  if [[ -z "$environments" ]]; then
+    echo "Erreur : Impossible de récupérer les environnements pour le programme $program_id."
+    continue
+  fi
+
+  # Parcourir chaque environnement
+  for environment_id in $environments; do
+    echo "Téléchargement des journaux pour l'environnement ID : $environment_id"
+
+    # Télécharger les journaux pour cet environnement
+    ../logs/download_logs.sh "$program_id" "$environment_id"
+    if [[ $? -ne 0 ]]; then
+      echo "Erreur : Échec du téléchargement des journaux pour l'environnement $environment_id."
     fi
-}
+  done
+done
 
-# Télécharge les journaux pour tous les programmes
-download_logs_for_all_programs() {
-    # Récupère la liste des programmes
-    local programs=$(./get_programs.sh)
-
-    for program_id in $programs; do
-        echo "Traitement du programme : $program_id"
-
-        # Récupère les environnements pour ce programme
-        local environments=$(./get_environments.sh "$program_id")
-
-        for environment_id in $environments; do
-            echo "Téléchargement des journaux pour l'environnement : $environment_id"
-
-            # Télécharge les journaux via un script dédié
-            ./download_logs.sh "$program_id" "$environment_id"
-        done
-    done
-}
-
-# Exécute les étapes
-check_dependencies
-download_logs_for_all_programs
-
-
+echo "Téléchargement des journaux terminé."

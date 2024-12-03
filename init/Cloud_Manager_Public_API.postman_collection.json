@@ -1,0 +1,390 @@
+{
+	"info": {
+		"_postman_id": "8879cbd2-87c7-4a63-bfde-7ae6feca796d",
+		"name": "Cloud Manager Public API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "1906505"
+	},
+	"item": [
+		{
+			"name": "List Programs",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"value": "{{organization_id}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": "https://{{host_name}}/api/programs"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Program",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pipelines",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"value": "{{organization_id}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipelines"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pipeline",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Current Execution",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution"
+			},
+			"response": []
+		},
+		{
+			"name": "Start Pipeline",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific Execution",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution/{{execution_id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific Execution Step",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution/{{execution_id}}/phase/{{phase_id}}/step/{{step_id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Advance Execution Step",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}"
+				},
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution/{{execution_id}}/phase/{{phase_id}}/step/{{step_id}}/advance"
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Execution Step",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}"
+				},
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution/{{execution_id}}/phase/{{phase_id}}/step/{{step_id}}/cancel"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific Execution Step Logs",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution/{{execution_id}}/phase/{{phase_id}}/step/{{step_id}}/logs"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific Execution Step Metrics",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/execution/{{execution_id}}/phase/{{phase_id}}/step/{{step_id}}/metrics"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Executions",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-gw-ims-org-id",
+						"type": "text",
+						"value": "{{organization_id}}"
+					},
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": "https://{{host_name}}/api/program/{{program_id}}/pipeline/{{pipeline_id}}/executions"
+			},
+			"response": []
+		},
+		{
+			"name": "Obtain Access Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const parsed = JSON.parse(responseBody);",
+							"pm.environment.set(\"access_token\", parsed[\"access_token\"]);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "{{scopes}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://{{ims_endpoint}}/ims/token/v3"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {
+			"token": "{{access_token}}"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host_name",
+			"value": "cloudmanager.adobe.io"
+		},
+		{
+			"key": "ims_endpoint",
+			"value": "ims-na1.adobelogin.com"
+		},
+		{
+			"key": "cloudmanager_claim",
+			"value": "https://ims-na1.adobelogin.com/s/ent_cloudmgr_sdk"
+		}
+	]
+}

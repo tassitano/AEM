@@ -14,78 +14,36 @@
 # Charger les variables communes
 source ./common/common.sh
 
-# Vérifier que les variables et le jeton sont correctement chargés
-token=$(check_variable "access_token")
-
-# Fonction pour récupérer la liste des programmes
-get_programs() {
-    echo "Récupération de la liste des programmes..."
-    programs_output=$(execute_curl "curl -s -X GET 'https://api.adobe.com/experience-manager/api/programs' -H 'Authorization: Bearer $token'")
-    
-    if [[ $? -ne 0 ]]; then
-        echo "Erreur : Impossible de récupérer la liste des programmes."
-        exit 1
-    fi
-
-    echo "$programs_output" | jq -r '.[] | select(.id != null) | .id'
-}
-
-# Fonction pour récupérer les environnements d'un programme
-get_environments() {
-    local program_id=$1
-    echo "Récupération des environnements pour le programme $program_id..."
-    environments_output=$(execute_curl "curl -s -X GET 'https://api.adobe.com/experience-manager/api/programs/$program_id/environments' -H 'Authorization: Bearer $token'")
-
-    if [[ $? -ne 0 ]]; then
-        echo "Erreur : Impossible de récupérer les environnements pour le programme $program_id."
-        exit 1
-    fi
-
-    echo "$environments_output" | jq -r '.[] | select(.id != null) | .id'
-}
-
-# Fonction pour récupérer les journaux pour un programme et ses environnements
-download_logs_for_program() {
-    local program_id=$1
-    echo "Récupération des journaux pour le programme $program_id..."
-    execute_curl "curl -s -X GET 'https://api.adobe.com/experience-manager/api/programs/$program_id/logs' -H 'Authorization: Bearer $token'"
-
-    if [[ $? -ne 0 ]]; then
-        echo "Erreur : Impossible de télécharger les journaux pour le programme $program_id."
+# Vérifie si les scripts externes nécessaires sont disponibles
+check_dependencies() {
+    if ! [ -x "$(command -v ./get_environments.sh)" ] || ! [ -x "$(command -v ./download_logs.sh)" ]; then
+        echo "Les scripts nécessaires (get_environments.sh ou download_logs.sh) ne sont pas accessibles." >&2
         exit 1
     fi
 }
 
-# Récupérer les programmes et leurs journaux
-main() {
-    echo "Démarrage de la récupération des journaux pour tous les programmes..."
-    
-    # Obtenir la liste des programmes
-    programs=$(get_programs)
-    
-    if [[ -z "$programs" ]]; then
-        echo "Aucun programme trouvé. Vérifiez vos permissions ou la connectivité."
-        exit 1
-    fi
+# Télécharge les journaux pour tous les programmes
+download_logs_for_all_programs() {
+    # Récupère la liste des programmes
+    local programs=$(./get_programs.sh)
 
-    # Parcourir chaque programme
     for program_id in $programs; do
         echo "Traitement du programme : $program_id"
-        
-        # Récupérer les environnements du programme
-        environments=$(get_environments $program_id)
-        
-        if [[ -z "$environments" ]]; then
-            echo "Aucun environnement trouvé pour le programme $program_id."
-            continue
-        fi
-        
-        # Télécharger les journaux pour le programme et ses environnements
-        download_logs_for_program $program_id
-    done
 
-    echo "Récupération terminée pour tous les programmes."
+        # Récupère les environnements pour ce programme
+        local environments=$(./get_environments.sh "$program_id")
+
+        for environment_id in $environments; do
+            echo "Téléchargement des journaux pour l'environnement : $environment_id"
+
+            # Télécharge les journaux via un script dédié
+            ./download_logs.sh "$program_id" "$environment_id"
+        done
+    done
 }
 
-# Exécuter le script
-main
+# Exécute les étapes
+check_dependencies
+download_logs_for_all_programs
+
+

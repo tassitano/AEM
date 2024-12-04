@@ -15,10 +15,11 @@ function afficher_erreur {
     echo "Réponse brute : $2"
 }
 
-# Récupérer la liste des utilisateurs associés à l'organisation
-echo "Récupération des utilisateurs associés à l'organisation..."
+# URL de l'API pour la liste des utilisateurs
 users_url="https://${host_name}/v2/usermanagement/${organization_id}/users"
 
+# Récupérer la liste des utilisateurs
+echo "Récupération de la liste des utilisateurs..."
 users_response=$(curl -s -X GET "$users_url" \
   -H "x-api-key: $api_key" \
   -H "Authorization: Bearer $access_token" \
@@ -26,63 +27,29 @@ users_response=$(curl -s -X GET "$users_url" \
 
 # Vérifier si la réponse est valide
 if ! echo "$users_response" | jq -e . >/dev/null 2>&1; then
-    echo "Erreur : La réponse de l'API pour les utilisateurs n'est pas au format JSON valide."
-    echo "Réponse brute : $users_response"
+    afficher_erreur "La réponse de l'API n'est pas au format JSON valide." "$users_response"
     exit 1
 fi
 
-# Extraire les IDs des utilisateurs
-user_ids=$(echo "$users_response" | jq -r '.[] | .id')
-
 # Initialiser le fichier CSV
-csv_file="user_data.csv"
+csv_file="users_list.csv"
 echo "User ID,Email,First Name,Last Name,Status,Username,Domain,User Type,Country Code,Groups" > "$csv_file"
 
-# Parcourir chaque utilisateur et récupérer ses informations détaillées
-for user_id in $user_ids; do
-    echo "Traitement de l'utilisateur : $user_id"
-    
-    # Requête pour récupérer les détails de l'utilisateur
-    user_details_url="https://${host_name}/v2/usermanagement/${organization_id}/users/${user_id}"
-    user_details_response=$(curl -s -X GET "$user_details_url" \
-      -H "x-api-key: $api_key" \
-      -H "Authorization: Bearer $access_token" \
-      -H "Content-Type: application/json")
+# Extraire et écrire les données au format CSV
+echo "$users_response" | jq -c '.[]' | while IFS= read -r user; do
+    user_id=$(echo "$user" | jq -r '.id // empty')
+    email=$(echo "$user" | jq -r '.email // empty')
+    first_name=$(echo "$user" | jq -r '.firstName // empty')
+    last_name=$(echo "$user" | jq -r '.lastName // empty')
+    status=$(echo "$user" | jq -r '.status // empty')
+    username=$(echo "$user" | jq -r '.username // empty')
+    domain=$(echo "$user" | jq -r '.domain // empty')
+    user_type=$(echo "$user" | jq -r '.userType // empty')
+    country_code=$(echo "$user" | jq -r '.countryCode // empty')
+    groups=$(echo "$user" | jq -r '.groups | join(", ") // empty')
 
-    # Vérifier si la réponse est valide
-    if ! echo "$user_details_response" | jq -e . >/dev/null 2>&1; then
-        afficher_erreur "Erreur lors de la récupération des informations pour l'utilisateur $user_id" "$user_details_response"
-        continue
-    fi
-
-    # Vérifier si la réponse est un code d'erreur 429 (Trop de requêtes) et réessayer après un délai
-    if echo "$user_details_response" | jq -e '.error_code == "429050"' >/dev/null 2>&1; then
-        echo "Erreur 429 (Trop de requêtes) pour l'utilisateur $user_id. Tentative de nouvelle requête après un délai de 10 secondes."
-        sleep 10  # Attendre 10 secondes avant de réessayer
-        user_details_response=$(curl -s -X GET "$user_details_url" \
-          -H "x-api-key: $api_key" \
-          -H "Authorization: Bearer $access_token" \
-          -H "Content-Type: application/json")
-    fi
-
-    # Extraire les données pertinentes pour chaque utilisateur
-    user_email=$(echo "$user_details_response" | jq -r '.email // empty')
-    user_first_name=$(echo "$user_details_response" | jq -r '.firstName // empty')
-    user_last_name=$(echo "$user_details_response" | jq -r '.lastName // empty')
-    user_status=$(echo "$user_details_response" | jq -r '.status // empty')
-    user_username=$(echo "$user_details_response" | jq -r '.username // empty')
-    user_domain=$(echo "$user_details_response" | jq -r '.domain // empty')
-    user_user_type=$(echo "$user_details_response" | jq -r '.userType // empty')
-    user_country_code=$(echo "$user_details_response" | jq -r '.countryCode // empty')
-
-    # Récupérer les groupes associés à l'utilisateur
-    user_groups=$(echo "$user_details_response" | jq -r '.groups | join(", ") // empty')
-
-    # Ajouter les données de l'utilisateur dans le fichier CSV
-    echo "$user_id,$user_email,$user_first_name,$user_last_name,$user_status,$user_username,$user_domain,$user_user_type,$user_country_code,$user_groups" >> "$csv_file"
-
-    # Pause entre les requêtes pour respecter la limite d'API
-    sleep 3
+    # Écrire la ligne dans le CSV
+    echo "$user_id,$email,$first_name,$last_name,$status,$username,$domain,$user_type,$country_code,$groups" >> "$csv_file"
 done
 
 echo "Les informations ont été enregistrées dans $csv_file"

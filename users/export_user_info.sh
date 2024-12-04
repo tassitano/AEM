@@ -46,7 +46,7 @@ echo "$users_response" | jq -c '.[]' | while IFS= read -r user; do
     domain=$(echo "$user" | jq -r '.domain // empty')
     user_type=$(echo "$user" | jq -r '.userType // empty')
     country_code=$(echo "$user" | jq -r '.countryCode // empty')
-    groups=$(echo "$user" | jq -r '.groups | join(", ") // empty')
+    groups=$(echo "$user" | jq -r 'if .groups != null then .groups | join(", ") else "" end')
 
     # Écrire la ligne dans le CSV
     echo "$user_id,$email,$first_name,$last_name,$status,$username,$domain,$user_type,$country_code,$groups" >> "$csv_file"

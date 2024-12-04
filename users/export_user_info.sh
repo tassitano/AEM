@@ -48,8 +48,12 @@ echo "$users_response" | jq -c '.[]' | while IFS= read -r user; do
     country_code=$(echo "$user" | jq -r '.countryCode // empty')
     groups=$(echo "$user" | jq -r 'if .groups != null then .groups | join(", ") else "" end')
 
+    # Encadrer les groupes entre guillemets
+    groups="\"$groups\""
+
     # Écrire la ligne dans le CSV
     echo "$user_id,$email,$first_name,$last_name,$status,$username,$domain,$user_type,$country_code,$groups" >> "$csv_file"
 done
+
 
 echo "Les informations ont été enregistrées dans $csv_file"
